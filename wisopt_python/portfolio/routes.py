@@ -1,4 +1,4 @@
-from .. import api
+from .. import portfolio_apis as api
 from . import controller
 
 # End point declarations

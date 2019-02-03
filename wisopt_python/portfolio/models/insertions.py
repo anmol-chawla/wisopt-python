@@ -2,6 +2,7 @@ import pymysql
 from flask import current_app
 from ... import app
 
+
 # Function to insert the education details for the provided user_id
 def insert_education(user_id, start_year, end_year, education_name, education_desc, institute_name):
     try:
@@ -21,4 +22,3 @@ def insert_education(user_id, start_year, end_year, education_name, education_de
             con.close()
     except Exception as e:
         raise Exception('Unable to connect to server database')
-
