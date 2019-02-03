@@ -2,7 +2,7 @@ from flask import request, jsonify, abort
 from flask_restplus import Resource, fields
 
 from .models.check import verify_token
-from .models.insertions import insert_education, insert_experience
+from .models.insertions import insert_education, insert_experience, insert_extra_curricular
 from .. import portfolio_apis as api
 
 
@@ -80,5 +80,42 @@ class insertExperience(Resource):
             insert_experience(user_id, title, location, start_date,
                               end_date, experience_desc, employer_name)
             return dict(status='Experience details successfully inserted.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+
+insertExtraCurricular_fields = api.model('insertExtraCurricular', {
+    'user_id': fields.String(required=True, description='User ID'),
+    'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
+    'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
+    'ec_name': fields.String(required=True, description='Name of the extra curricular activity entered'),
+    'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
+    'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
+})
+insert_ec_parser = api.parser()
+insert_ec_parser.add_argument(
+    'token', location='headers', required=True, help='Token for the given user id')
+
+
+class insertExtraCurricular(Resource):
+    method_decorators = [verify_token]
+
+    @api.doc(body=insertExtraCurricular_fields, parser=insert_ec_parser)
+    @api.response(201, 'Extra curricular details successfully inserted.')
+    @api.response(401, 'Unauthorized access')
+    def post(self):
+        """
+            Insert the extra curriculara details for the user_id
+        """
+        try:
+            user_id = request.form.get('user_id')
+            ec_type = request.form.get('ec_type')
+            ec_name = request.form.get('ec_name')
+            ec_desc = request.form.get('ec_desc')
+            start_date = request.form.get('start_date')
+            end_date = request.form.get('end_date')
+            insert_extra_curricular(
+                user_id, ec_type, ec_name, ec_desc, start_date, end_date)
+            return dict(status='Extra curricular details successfully inserted.'), 201
         except Exception as e:
             abort(400, str(e))

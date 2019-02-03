@@ -52,3 +52,23 @@ def insert_experience(user_id, title, location, start_date, end_date, experience
             con.close()
     except Exception as e:
         raise Exception('Unable to connect to server database')
+
+
+# Function to insert extra curricular activities for the provided user_id
+def insert_extra_curricular(user_id, ec_type, ec_name, ec_desc, start_date, end_date):
+    try:
+        with app.app_context():
+            con = pymysql.connect(host=current_app.config['DB_HOST'],
+                                  user=current_app.config['DB_USER'],
+                                  password=current_app.config['DB_PASSWORD'],
+                                  db=current_app.config['DB'],
+                                  charset=current_app.config['DB_CHARSET'],
+                                  cursorclass=pymysql.cursors.DictCursor,
+                                  port=current_app.config['DB_PORT'])
+            cur = con.cursor()
+            cur.execute("INSERT INTO table_extra_curricular (user_id, extra_curricular_type, extra_curricular_name, description, start_date, end_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (user_id, ec_type, ec_name, ec_desc, start_date, end_date))
+            con.commit()
+            con.close()
+    except Exception as e:
+        raise Exception('Unable to connect to server database')
