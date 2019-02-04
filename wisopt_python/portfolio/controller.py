@@ -1,7 +1,7 @@
 from flask import request, jsonify, abort
 from flask_restplus import Resource, fields
 
-from .models.check import verify_token
+from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular
 from .. import portfolio_apis as api
 
