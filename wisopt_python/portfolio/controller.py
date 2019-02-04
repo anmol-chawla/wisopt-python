@@ -6,7 +6,7 @@ from .models.insertions import insert_education, insert_experience, insert_extra
 from .. import portfolio_apis as api
 
 
-insertEducation_fields = api.model('insertEducation', {
+Education_fields = api.model('Education', {
     'user_id': fields.String(required=True, description='User ID'),
     'start_year': fields.String(required=True, description='Start year of the particular education'),
     'end_year': fields.String(required=True, description='End year of the particular edcuation'),
@@ -15,15 +15,15 @@ insertEducation_fields = api.model('insertEducation', {
     'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
 }
 )
-insert_education_parser = api.parser()
-insert_education_parser.add_argument(
+education_parser = api.parser()
+education_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
 
 
-class insertEducation(Resource):
+class Education(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertEducation_fields, parser=insert_education_parser)
+    @api.doc(body=Education_fields, parser=education_parser)
     @api.response(201, 'Education details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -44,7 +44,7 @@ class insertEducation(Resource):
             abort(400, str(e))
 
 
-insertExperience_fields = api.model('insertExperience', {
+Experience_fields = api.model('Experience', {
     'user_id': fields.String(required=True, description='User ID'),
     'start_date': fields.String(required=True, description='Start date of the particular experience'),
     'end_date': fields.String(required=True, description='End date of the particular experience'),
@@ -54,15 +54,15 @@ insertExperience_fields = api.model('insertExperience', {
     'location': fields.String(required=True, description='Location from where the experience was obtained')
 }
 )
-insert_experience_parser = api.parser()
-insert_experience_parser.add_argument(
+experience_parser = api.parser()
+experience_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
 
 
-class insertExperience(Resource):
+class Experience(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertExperience_fields, parser=insert_experience_parser)
+    @api.doc(body=Experience_fields, parser=experience_parser)
     @api.response(201, 'Experience details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -84,7 +84,7 @@ class insertExperience(Resource):
             abort(400, str(e))
 
 
-insertExtraCurricular_fields = api.model('insertExtraCurricular', {
+ExtraCurricular_fields = api.model('ExtraCurricular', {
     'user_id': fields.String(required=True, description='User ID'),
     'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
     'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
@@ -92,15 +92,15 @@ insertExtraCurricular_fields = api.model('insertExtraCurricular', {
     'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
     'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
 })
-insert_ec_parser = api.parser()
-insert_ec_parser.add_argument(
+ec_parser = api.parser()
+ec_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
 
 
-class insertExtraCurricular(Resource):
+class ExtraCurricular(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertExtraCurricular_fields, parser=insert_ec_parser)
+    @api.doc(body=ExtraCurricular_fields, parser=ec_parser)
     @api.response(201, 'Extra curricular details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -119,3 +119,4 @@ class insertExtraCurricular(Resource):
             return dict(status='Extra curricular details successfully inserted.'), 201
         except Exception as e:
             abort(400, str(e))
+
