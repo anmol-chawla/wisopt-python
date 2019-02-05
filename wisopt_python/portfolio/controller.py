@@ -4,7 +4,7 @@ from flask_restplus import Resource, fields
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
 from .models.updates import update_education, update_experience, update_extra_curricular, update_social
-from .models.deletions import delete_education
+from .models.deletions import delete_education, delete_experience
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -119,6 +119,10 @@ updateExperience_fields = api.model('Experience(updation)', {
 }
 )
 
+deleteExperience_fields = api.model('Experience(deletion)', {
+    'experience_id': fields.Integer(required=True, description='ID of the exprience')
+})
+
 
 class Experience(Resource):
     method_decorators = [verify_token]
@@ -163,6 +167,20 @@ class Experience(Resource):
             update_experience(user_id, experience_id, title, location, start_date,
                               end_date, experience_desc, employer_name)
             return dict(status='Experience details successfully updated.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=deleteExperience_fields, parser=api_parser)
+    @api.response(200, 'Experience details successfully deleted.')
+    @api.response(401, 'Unauthorized access')
+    def delete(self):
+        """
+            Delete the experience details for the experience_id
+        """
+        try:
+            experience_id = request.form.get('experience_id')
+            delete_experience(experience_id)
+            return dict(status='Experience details successfully deleted.'), 200
         except Exception as e:
             abort(400, str(e))
 
