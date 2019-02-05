@@ -4,7 +4,7 @@ from flask_restplus import Resource, fields
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
 from .models.updates import update_education, update_experience, update_extra_curricular, update_social
-from .models.deletions import delete_education, delete_experience
+from .models.deletions import delete_education, delete_experience, delete_extra_curricular
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -204,6 +204,10 @@ updateExtraCurricular_fields = api.model('ExtraCurricular(updation)', {
     'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
 })
 
+deleteExtraCurricular_fields = api.model('ExtraCurricular(deletion)', {
+    'ec_id': fields.Integer(required=True, description='ID of the extra curricular activity')
+})
+
 
 class ExtraCurricular(Resource):
     method_decorators = [verify_token]
@@ -246,6 +250,20 @@ class ExtraCurricular(Resource):
             update_extra_curricular(
                 user_id, ec_id, ec_type, ec_name, ec_desc, start_date, end_date)
             return dict(status='Extra curricular details successfully updated.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=deleteExtraCurricular_fields, parser=api_parser)
+    @api.response(200, 'Extra curricular details successfully deleted.')
+    @api.response(401, 'Unauthorized access')
+    def delete(self):
+        """
+            Delete the extra curricular details for the given ec_id
+        """
+        try:
+            ec_id = request.form.get('ec_id')
+            delete_extra_curricular(ec_id)
+            return dict(status='Extra curricular details successfully deleted.'), 200
         except Exception as e:
             abort(400, str(e))
 
