@@ -4,7 +4,7 @@ from flask_restplus import Resource, fields
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
 from .models.updates import update_education, update_experience, update_extra_curricular, update_social
-from .models.deletions import delete_education, delete_experience, delete_extra_curricular
+from .models.deletions import delete_education, delete_experience, delete_extra_curricular, delete_social
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -276,9 +276,13 @@ insertSocial_fields = api.model('Social(insertion)', {
 
 updateSocial_fields = api.model('Social(updation)', {
     'user_id': fields.Integer(required=True, description='User ID'),
-    'social_id': fields.Integer(required=True, description='User ID'),
+    'social_id': fields.Integer(required=True, description='ID of the social detail'),
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
+})
+
+deleteSocial_fields = api.model('Social(deletion)', {
+    'social_id': fields.Integer(required=True, description='ID of the social detail'),
 })
 
 
@@ -315,5 +319,19 @@ class Social(Resource):
             social_link = request.form.get('social_link')
             update_social(user_id, social_id, social_name, social_link)
             return dict(status='Social details successfully updated'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=deleteSocial_fields, parser=api_parser)
+    @api.response(200, 'Social details successfully deleted.')
+    @api.response(401, 'Unauthorized access')
+    def delete(self):
+        """
+            Delete the social details for the social_id
+        """
+        try:
+            social_id = request.form.get('social_id')
+            delete_social(social_id)
+            return dict(status='Social details successfully deleted'), 200
         except Exception as e:
             abort(400, str(e))

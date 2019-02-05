@@ -62,3 +62,23 @@ def delete_extra_curricular(ec_id):
             con.close()
     except Exception as e:
         raise Exception('Unable to connect to server database')
+
+
+# Function to delete the given social_id
+def delete_social(social_id):
+    try:
+        with app.app_context():
+            con = pymysql.connect(host=current_app.config['DB_HOST'],
+                                  user=current_app.config['DB_USER'],
+                                  password=current_app.config['DB_PASSWORD'],
+                                  db=current_app.config['DB'],
+                                  charset=current_app.config['DB_CHARSET'],
+                                  cursorclass=pymysql.cursors.DictCursor,
+                                  port=current_app.config['DB_PORT'])
+            cur = con.cursor()
+            cur.execute(
+                "DELETE FROM table_social WHERE social_id = %s", social_id)
+            con.commit()
+            con.close()
+    except Exception as e:
+        raise Exception('Unable to connect to server database')
