@@ -3,7 +3,7 @@ from flask_restplus import Resource, fields
 
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
-from .models.updates import update_education, update_experience
+from .models.updates import update_education, update_experience, update_extra_curricular
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -90,7 +90,7 @@ insertExperience_fields = api.model('Experience(insertion)', {
 
 updateExperience_fields = api.model('Experience(updation)', {
     'user_id': fields.String(required=True, description='User ID'),
-    'experience_id': fields.String(required=True, description='ID of the exprience entered'),
+    'experience_id': fields.String(required=True, description='ID of the exprience'),
     'start_date': fields.String(required=True, description='Start date of the particular experience'),
     'end_date': fields.String(required=True, description='End date of the particular experience'),
     'title': fields.String(required=True, description='Name of the experience entered'),
@@ -148,11 +148,21 @@ class Experience(Resource):
             abort(400, str(e))
 
 
-ExtraCurricular_fields = api.model('ExtraCurricular', {
+insertExtraCurricular_fields = api.model('ExtraCurricular(insertion)', {
     'user_id': fields.String(required=True, description='User ID'),
     'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
     'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
-    'ec_name': fields.String(required=True, description='Name of the extra curricular activity entered'),
+    'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
+    'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
+    'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
+})
+
+updateExtraCurricular_fields = api.model('ExtraCurricular(updation)', {
+    'user_id': fields.String(required=True, description='User ID'),
+    'ec_id': fields.String(required=True, description='ID of the extra curricular activity'),
+    'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
+    'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
+    'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
     'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
     'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
 })
@@ -161,7 +171,7 @@ ExtraCurricular_fields = api.model('ExtraCurricular', {
 class ExtraCurricular(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=ExtraCurricular_fields, parser=api_parser)
+    @api.doc(body=insertExtraCurricular_fields, parser=api_parser)
     @api.response(201, 'Extra curricular details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -177,6 +187,27 @@ class ExtraCurricular(Resource):
             end_date = request.form.get('end_date')
             insert_extra_curricular(
                 user_id, ec_type, ec_name, ec_desc, start_date, end_date)
+            return dict(status='Extra curricular details successfully inserted.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=updateExtraCurricular_fields, parser=api_parser)
+    @api.response(201, 'Extra curricular details successfully inserted.')
+    @api.response(401, 'Unauthorized access')
+    def put(self):
+        """
+            Update the extra curricular details for the user_id
+        """
+        try:
+            user_id = request.form.get('user_id')
+            ec_id = request.form.get('ec_id')
+            ec_type = request.form.get('ec_type')
+            ec_name = request.form.get('ec_name')
+            ec_desc = request.form.get('ec_desc')
+            start_date = request.form.get('start_date')
+            end_date = request.form.get('end_date')
+            update_extra_curricular(
+                user_id, ec_id, ec_type, ec_name, ec_desc, start_date, end_date)
             return dict(status='Extra curricular details successfully inserted.'), 201
         except Exception as e:
             abort(400, str(e))
