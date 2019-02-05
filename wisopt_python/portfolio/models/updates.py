@@ -72,3 +72,23 @@ def update_extra_curricular(user_id, ec_id, ec_type, ec_name, ec_desc, start_dat
             con.close()
     except Exception as e:
         raise Exception('Unable to connect to server database')
+
+
+# Function to update the social details for the user_id
+def update_social(user_id, social_id, social_name, social_link):
+    try:
+        with app.app_context():
+            con = pymysql.connect(host=current_app.config['DB_HOST'],
+                                  user=current_app.config['DB_USER'],
+                                  password=current_app.config['DB_PASSWORD'],
+                                  db=current_app.config['DB'],
+                                  charset=current_app.config['DB_CHARSET'],
+                                  cursorclass=pymysql.cursors.DictCursor,
+                                  port=current_app.config['DB_PORT'])
+            cur = con.cursor()
+            cur.execute("UPDATE table_social SET user_id = %s, social_name = %s, social_link = %s WHERE social_id = %s",
+                        (user_id, social_name, social_link, social_id))
+            con.commit()
+            con.close()
+    except Exception as e:
+        raise Exception('Unable to connect to server database')

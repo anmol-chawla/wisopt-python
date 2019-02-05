@@ -3,7 +3,7 @@ from flask_restplus import Resource, fields
 
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
-from .models.updates import update_education, update_experience, update_extra_curricular
+from .models.updates import update_education, update_experience, update_extra_curricular, update_social
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -192,7 +192,7 @@ class ExtraCurricular(Resource):
             abort(400, str(e))
 
     @api.doc(body=updateExtraCurricular_fields, parser=api_parser)
-    @api.response(201, 'Extra curricular details successfully inserted.')
+    @api.response(201, 'Extra curricular details successfully updated.')
     @api.response(401, 'Unauthorized access')
     def put(self):
         """
@@ -208,22 +208,28 @@ class ExtraCurricular(Resource):
             end_date = request.form.get('end_date')
             update_extra_curricular(
                 user_id, ec_id, ec_type, ec_name, ec_desc, start_date, end_date)
-            return dict(status='Extra curricular details successfully inserted.'), 201
+            return dict(status='Extra curricular details successfully updated.'), 201
         except Exception as e:
             abort(400, str(e))
 
 
-Social_fields = api.model('Social', {
+insertSocial_fields = api.model('Social(insertion)', {
     'user_id': fields.String(required=True, description='User ID'),
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
 })
 
+updateSocial_fields = api.model('Social(updation)', {
+    'user_id': fields.String(required=True, description='User ID'),
+    'social_id': fields.String(required=True, description='User ID'),
+    'social_name': fields.String(required=True, description='Name of the social activity entered'),
+    'social_link': fields.String(required=True, description='Link of social activity'),
+})
 
 class Social(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=Social_fields, parser=api_parser)
+    @api.doc(body=insertSocial_fields, parser=api_parser)
     @api.response(201, 'Social details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -236,5 +242,22 @@ class Social(Resource):
             social_link = request.form.get('social_link')
             insert_social(user_id, social_name, social_link)
             return dict(status='Social details successfully inserted'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=updateSocial_fields, parser=api_parser)
+    @api.response(201, 'Social details successfully updated.')
+    @api.response(401, 'Unauthorized access')
+    def put(self):
+        """
+            Update the social details for the user_id
+        """
+        try:
+            user_id = request.form.get('user_id')
+            social_id = request.form.get('social_id')
+            social_name = request.form.get('social_name')
+            social_link = request.form.get('social_link')
+            update_social(user_id, social_id, social_name, social_link)
+            return dict(status='Social details successfully updated'), 201
         except Exception as e:
             abort(400, str(e))
