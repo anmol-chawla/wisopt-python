@@ -3,10 +3,14 @@ from flask_restplus import Resource, fields
 
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
+from .models.updates import update_education
 from .. import portfolio_apis as api
 
+api_parser = api.parser()
+api_parser.add_argument(
+    'token', location='headers', required=True, help='Token for the given user id')
 
-Education_fields = api.model('Education', {
+insertEducation_fields = api.model('Education(insertion)', {
     'user_id': fields.String(required=True, description='User ID'),
     'start_year': fields.String(required=True, description='Start year of the particular education'),
     'end_year': fields.String(required=True, description='End year of the particular edcuation'),
@@ -15,15 +19,23 @@ Education_fields = api.model('Education', {
     'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
 }
 )
-education_parser = api.parser()
-education_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
+
+updateEducation_fields = api.model('Education(updation)', {
+    'user_id': fields.String(required=True, description='User ID'),
+    'start_year': fields.String(required=True, description='Start year of the particular education'),
+    'end_year': fields.String(required=True, description='End year of the particular edcuation'),
+    'education_id': fields.String(required=True, description='ID of the education'),
+    'education_name': fields.String(required=True, description='Name of the education entered'),
+    'education_desc': fields.String(required=True, description='Description about the education'),
+    'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
+}
+)
 
 
 class Education(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=Education_fields, parser=education_parser)
+    @api.doc(body=insertEducation_fields, parser=api_parser)
     @api.response(201, 'Education details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -43,6 +55,27 @@ class Education(Resource):
         except Exception as e:
             abort(400, str(e))
 
+    @api.doc(body=updateEducation_fields, parser=api_parser)
+    @api.response(201, 'Education details successfully updated.')
+    @api.response(401, 'Unauthorized access')
+    def put(self):
+        """
+            Update the education details for the user_id
+        """
+        try:
+            user_id = request.form.get('user_id')
+            start_year = request.form.get('start_year')
+            end_year = request.form.get('end_year')
+            education_id = request.form.get('education_id')
+            education_name = request.form.get('education_name')
+            education_desc = request.form.get('education_desc')
+            institute_name = request.form.get('institute_name')
+            update_education(user_id, education_id, start_year, end_year,
+                             education_name, education_desc, institute_name)
+            return dict(status='Education details successfully updated.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
 
 Experience_fields = api.model('Experience', {
     'user_id': fields.String(required=True, description='User ID'),
@@ -54,15 +87,12 @@ Experience_fields = api.model('Experience', {
     'location': fields.String(required=True, description='Location from where the experience was obtained')
 }
 )
-experience_parser = api.parser()
-experience_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
 
 
 class Experience(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=Experience_fields, parser=experience_parser)
+    @api.doc(body=Experience_fields, parser=api_parser)
     @api.response(201, 'Experience details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -92,15 +122,12 @@ ExtraCurricular_fields = api.model('ExtraCurricular', {
     'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
     'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
 })
-ec_parser = api.parser()
-ec_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
 
 
 class ExtraCurricular(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=ExtraCurricular_fields, parser=ec_parser)
+    @api.doc(body=ExtraCurricular_fields, parser=api_parser)
     @api.response(201, 'Extra curricular details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -126,15 +153,12 @@ Social_fields = api.model('Social', {
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
 })
-social_parser = api.parser()
-social_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
 
 
 class Social(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=Social_fields, parser=social_parser)
+    @api.doc(body=Social_fields, parser=api_parser)
     @api.response(201, 'Social details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
