@@ -11,7 +11,7 @@ api_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
 
 insertEducation_fields = api.model('Education(insertion)', {
-    'user_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
     'start_year': fields.String(required=True, description='Start year of the particular education'),
     'end_year': fields.String(required=True, description='End year of the particular edcuation'),
     'education_name': fields.String(required=True, description='Name of the education entered'),
@@ -21,10 +21,10 @@ insertEducation_fields = api.model('Education(insertion)', {
 )
 
 updateEducation_fields = api.model('Education(updation)', {
-    'user_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
     'start_year': fields.String(required=True, description='Start year of the particular education'),
     'end_year': fields.String(required=True, description='End year of the particular edcuation'),
-    'education_id': fields.String(required=True, description='ID of the education'),
+    'education_id': fields.Integer(required=True, description='ID of the education'),
     'education_name': fields.String(required=True, description='Name of the education entered'),
     'education_desc': fields.String(required=True, description='Description about the education'),
     'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
@@ -78,7 +78,7 @@ class Education(Resource):
 
 
 insertExperience_fields = api.model('Experience(insertion)', {
-    'user_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
     'start_date': fields.String(required=True, description='Start date of the particular experience'),
     'end_date': fields.String(required=True, description='End date of the particular experience'),
     'title': fields.String(required=True, description='Name of the experience entered'),
@@ -89,8 +89,8 @@ insertExperience_fields = api.model('Experience(insertion)', {
 )
 
 updateExperience_fields = api.model('Experience(updation)', {
-    'user_id': fields.String(required=True, description='User ID'),
-    'experience_id': fields.String(required=True, description='ID of the exprience'),
+    'user_id': fields.Integer(required=True, description='User ID'),
+    'experience_id': fields.Integer(required=True, description='ID of the exprience'),
     'start_date': fields.String(required=True, description='Start date of the particular experience'),
     'end_date': fields.String(required=True, description='End date of the particular experience'),
     'title': fields.String(required=True, description='Name of the experience entered'),
@@ -149,7 +149,7 @@ class Experience(Resource):
 
 
 insertExtraCurricular_fields = api.model('ExtraCurricular(insertion)', {
-    'user_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
     'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
     'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
     'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
@@ -158,8 +158,8 @@ insertExtraCurricular_fields = api.model('ExtraCurricular(insertion)', {
 })
 
 updateExtraCurricular_fields = api.model('ExtraCurricular(updation)', {
-    'user_id': fields.String(required=True, description='User ID'),
-    'ec_id': fields.String(required=True, description='ID of the extra curricular activity'),
+    'user_id': fields.Integer(required=True, description='User ID'),
+    'ec_id': fields.Integer(required=True, description='ID of the extra curricular activity'),
     'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
     'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
     'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
@@ -214,14 +214,14 @@ class ExtraCurricular(Resource):
 
 
 insertSocial_fields = api.model('Social(insertion)', {
-    'user_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
 })
 
 updateSocial_fields = api.model('Social(updation)', {
-    'user_id': fields.String(required=True, description='User ID'),
-    'social_id': fields.String(required=True, description='User ID'),
+    'user_id': fields.Integer(required=True, description='User ID'),
+    'social_id': fields.Integer(required=True, description='User ID'),
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
 })
