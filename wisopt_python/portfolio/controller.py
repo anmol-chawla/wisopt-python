@@ -4,6 +4,7 @@ from flask_restplus import Resource, fields
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
 from .models.updates import update_education, update_experience, update_extra_curricular, update_social
+from .models.deletions import delete_education
 from .. import portfolio_apis as api
 
 api_parser = api.parser()
@@ -31,6 +32,10 @@ updateEducation_fields = api.model('Education(updation)', {
 }
 )
 
+deleteEducation_fields = api.model('Education(deletion)', {
+    'education_id': fields.Integer(required=True, description='ID of the education')
+})
+
 
 class Education(Resource):
     method_decorators = [verify_token]
@@ -56,7 +61,7 @@ class Education(Resource):
             abort(400, str(e))
 
     @api.doc(body=updateEducation_fields, parser=api_parser)
-    @api.response(201, 'Education details successfully updated.')
+    @api.response(200, 'Education details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def put(self):
         """
@@ -73,6 +78,20 @@ class Education(Resource):
             update_education(user_id, education_id, start_year, end_year,
                              education_name, education_desc, institute_name)
             return dict(status='Education details successfully updated.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(body=deleteEducation_fields, parser=api_parser)
+    @api.response(201, 'Education details successfully deleted.')
+    @api.response(401, 'Unauthorized access')
+    def delete(self):
+        """
+            Delete the education detail for education_id
+        """
+        try:
+            education_id = request.form.get('education_id')
+            delete_education(education_id)
+            return dict(status='Education details successfully deleted.'), 200
         except Exception as e:
             abort(400, str(e))
 
@@ -225,6 +244,7 @@ updateSocial_fields = api.model('Social(updation)', {
     'social_name': fields.String(required=True, description='Name of the social activity entered'),
     'social_link': fields.String(required=True, description='Link of social activity'),
 })
+
 
 class Social(Resource):
     method_decorators = [verify_token]
