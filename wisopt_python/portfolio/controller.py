@@ -1,5 +1,5 @@
-from flask import request, jsonify, abort
-from flask_restplus import Resource, fields
+from flask import request, abort
+from flask_restplus import Resource
 
 from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
@@ -7,40 +7,41 @@ from .models.updates import update_education, update_experience, update_extra_cu
 from .models.deletions import delete_education, delete_experience, delete_extra_curricular, delete_social
 from .. import portfolio_apis as api
 
-api_parser = api.parser()
-api_parser.add_argument(
+# Declaring a base parser object with the arguments required for each route
+base_parser = api.parser()
+base_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
+base_parser.add_argument(
+    'user_id', type=int, location='form', required=True, help='User ID')
 
-insertEducation_fields = api.model('Education(insertion)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'start_year': fields.String(required=True, description='Start year of the particular education'),
-    'end_year': fields.String(required=True, description='End year of the particular edcuation'),
-    'education_name': fields.String(required=True, description='Name of the education entered'),
-    'education_desc': fields.String(required=True, description='Description about the education'),
-    'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
-}
-)
+# Declaring a parser object for inserting data with the necessary arguments
+insertEducation_parser = base_parser.copy()
+insertEducation_parser.add_argument(
+    'start_year', type=str, location='form', required=True, help='Start year of the particular education')
+insertEducation_parser.add_argument(
+    'end_year', type=str, location='form', required=False, help='End year of the particular education')
+insertEducation_parser.add_argument(
+    'education_name', type=str, location='form', required=True, help='Name of the education entered')
+insertEducation_parser.add_argument(
+    'education_desc', type=str, location='form', required=True, help='Description about the education')
+insertEducation_parser.add_argument(
+    'institute_name', type=str, location='form', required=True, help='Insititute from where the education was recieved')
 
-updateEducation_fields = api.model('Education(updation)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'start_year': fields.String(required=True, description='Start year of the particular education'),
-    'end_year': fields.String(required=True, description='End year of the particular edcuation'),
-    'education_id': fields.Integer(required=True, description='ID of the education'),
-    'education_name': fields.String(required=True, description='Name of the education entered'),
-    'education_desc': fields.String(required=True, description='Description about the education'),
-    'intitute_name': fields.String(required=True, description='Insititute from where the education was recieved')
-}
-)
+# Creating a copy of the insertion parser and adding an argument for the id of the resource in the db
+updateEducation_parser = insertEducation_parser.copy()
+updateEducation_parser.add_argument(
+    'education_id', type=int, location='form', required=True, help='ID of the education')
 
-deleteEducation_fields = api.model('Education(deletion)', {
-    'education_id': fields.Integer(required=True, description='ID of the education')
-})
+# Declaring a deletetion parser object for the delete the resource at the id in the db
+deleteEducation_parser = base_parser.copy()
+deleteEducation_parser.add_argument(
+    'education_id', type=int, location='form', required=True, help='ID of the education')
 
 
 class Education(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertEducation_fields, parser=api_parser)
+    @api.doc(parser=insertEducation_parser)
     @api.response(201, 'Education details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -60,7 +61,7 @@ class Education(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=updateEducation_fields, parser=api_parser)
+    @api.doc(parser=updateEducation_parser)
     @api.response(200, 'Education details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def put(self):
@@ -81,7 +82,7 @@ class Education(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=deleteEducation_fields, parser=api_parser)
+    @api.doc(parser=deleteEducation_parser)
     @api.response(201, 'Education details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def delete(self):
@@ -96,38 +97,36 @@ class Education(Resource):
             abort(400, str(e))
 
 
-insertExperience_fields = api.model('Experience(insertion)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'start_date': fields.String(required=True, description='Start date of the particular experience'),
-    'end_date': fields.String(required=True, description='End date of the particular experience'),
-    'title': fields.String(required=True, description='Name of the experience entered'),
-    'experience_desc': fields.String(required=True, description='Description about the experience'),
-    'employer_name': fields.String(required=True, description='Name of employer under whom the experience was obtained'),
-    'location': fields.String(required=True, description='Location from where the experience was obtained')
-}
-)
+# Declaring a parser object for inserting data with the necessary arguments
+insertExperience_parser = base_parser.copy()
+insertExperience_parser.add_argument(
+    'start_date', type=str, location='form', required=True, help='Start date of the particular experience')
+insertExperience_parser.add_argument(
+    'end_date', type=str, location='form', required=False, help='End date of the particular experience')
+insertExperience_parser.add_argument(
+    'title', type=str, location='form', required=True, help='Title of the experience entered')
+insertExperience_parser.add_argument(
+    'experience_desc', type=str, location='form', required=True, help='Description about the experience')
+insertExperience_parser.add_argument(
+    'employer_name', type=str, location='form', required=True, help='Name of employer under whom the experience was obtained')
+insertExperience_parser.add_argument(
+    'location', type=str, location='form', required=True, help='Location from where the experience was obtained')
 
-updateExperience_fields = api.model('Experience(updation)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'experience_id': fields.Integer(required=True, description='ID of the exprience'),
-    'start_date': fields.String(required=True, description='Start date of the particular experience'),
-    'end_date': fields.String(required=True, description='End date of the particular experience'),
-    'title': fields.String(required=True, description='Name of the experience entered'),
-    'experience_desc': fields.String(required=True, description='Description about the experience'),
-    'employer_name': fields.String(required=True, description='Name of employer under whom the experience was obtained'),
-    'location': fields.String(required=True, description='Location from where the experience was obtained')
-}
-)
+# Creating a copy of the insertion parser and adding an argument for the id of the resource in the db
+updateExperience_parser = insertExperience_parser.copy()
+updateExperience_parser.add_argument(
+    'experience_id', type=int, location='form', required=True, help='ID of the experience')
 
-deleteExperience_fields = api.model('Experience(deletion)', {
-    'experience_id': fields.Integer(required=True, description='ID of the exprience')
-})
+# Declaring a deletetion parser object for the delete the resource at the id in the db
+deleteExperience_parser = base_parser.copy()
+deleteExperience_parser.add_argument(
+    'experience_id', type=int, location='form', required=True, help='ID of the experience')
 
 
 class Experience(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertExperience_fields, parser=api_parser)
+    @api.doc(parser=insertExperience_parser)
     @api.response(201, 'Experience details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -148,7 +147,7 @@ class Experience(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=updateExperience_fields, parser=api_parser)
+    @api.doc(parser=updateExperience_parser)
     @api.response(201, 'Experience details successfully updated.')
     @api.response(401, 'Unauthorized access')
     def put(self):
@@ -170,7 +169,7 @@ class Experience(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=deleteExperience_fields, parser=api_parser)
+    @api.doc(parser=deleteExperience_parser)
     @api.response(200, 'Experience details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def delete(self):
@@ -185,34 +184,36 @@ class Experience(Resource):
             abort(400, str(e))
 
 
-insertExtraCurricular_fields = api.model('ExtraCurricular(insertion)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
-    'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
-    'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
-    'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
-    'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
-})
+# Declaring a parser object for inserting data with the necessary arguments
+insertExtraCurricular_parser = base_parser.copy()
+insertExtraCurricular_parser.add_argument(
+    'start_date', type=str, location='form', required=True, help='Start date of the particular extra curricular activity')
+insertExtraCurricular_parser.add_argument(
+    'end_date', type=str, location='form', required=False, help='End date of the particular extra curricular activity')
+insertExtraCurricular_parser.add_argument(
+    'ec_name', type=str, location='form', required=True, help='Title of the extra curricular activity entered')
+insertExtraCurricular_parser.add_argument(
+    'ec_desc', type=str, location='form', required=True, help='Description about the extra curricular activity')
+insertExtraCurricular_parser.add_argument(
+    'ec_type', type=str, location='form', required=True, help='Name of employer under whom the experience was obtained')
+insertExtraCurricular_parser.add_argument(
+    'location', type=str, location='form', required=True, help='Type of extra curricular activity')
 
-updateExtraCurricular_fields = api.model('ExtraCurricular(updation)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'ec_id': fields.Integer(required=True, description='ID of the extra curricular activity'),
-    'start_date': fields.String(required=True, description='Start date of the particular extra curricular activity'),
-    'end_date': fields.String(required=True, description='End date of the particular extra curricular activity'),
-    'ec_name': fields.String(required=True, description='Possible fields - enum(Sports, Arts, Volunteering, Hobby, Other)'),
-    'ec_desc': fields.String(required=True, description='Description about the extra curricular activity'),
-    'ec_type': fields.String(required=True, description='Type of extra curricular activity'),
-})
+# Creating a copy of the insertion parser and adding an argument for the id of the resource in the db
+updateExtraCurricular_parser = insertExtraCurricular_parser.copy()
+updateExtraCurricular_parser.add_argument(
+    'ec_id', type=int, location='form', required=True, help='ID of the extra curricular activity')
 
-deleteExtraCurricular_fields = api.model('ExtraCurricular(deletion)', {
-    'ec_id': fields.Integer(required=True, description='ID of the extra curricular activity')
-})
+# Declaring a deletetion parser object for the delete the resource at the id in the db
+deleteExtraCurricular_parser = base_parser.copy()
+deleteExtraCurricular_parser.add_argument(
+    'ec_id', type=int, location='form', required=True, help='ID of the extra curricular activity')
 
 
 class ExtraCurricular(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertExtraCurricular_fields, parser=api_parser)
+    @api.doc(parser=insertExtraCurricular_parser)
     @api.response(201, 'Extra curricular details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -232,7 +233,7 @@ class ExtraCurricular(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=updateExtraCurricular_fields, parser=api_parser)
+    @api.doc(parser=updateExtraCurricular_parser)
     @api.response(201, 'Extra curricular details successfully updated.')
     @api.response(401, 'Unauthorized access')
     def put(self):
@@ -253,7 +254,7 @@ class ExtraCurricular(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=deleteExtraCurricular_fields, parser=api_parser)
+    @api.doc(parser=deleteExtraCurricular_parser)
     @api.response(200, 'Extra curricular details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def delete(self):
@@ -268,28 +269,28 @@ class ExtraCurricular(Resource):
             abort(400, str(e))
 
 
-insertSocial_fields = api.model('Social(insertion)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'social_name': fields.String(required=True, description='Name of the social activity entered'),
-    'social_link': fields.String(required=True, description='Link of social activity'),
-})
+# Declaring a parser object for inserting data with the necessary arguments
+insertSocial_parser = base_parser.copy()
+insertSocial_parser.add_argument(
+    'social_name', type=str, location='form', required=True, help='Name of the social activity entered')
+insertSocial_parser.add_argument(
+    'social_link', type=str, location='form', required=True, help='Link of social activity')
 
-updateSocial_fields = api.model('Social(updation)', {
-    'user_id': fields.Integer(required=True, description='User ID'),
-    'social_id': fields.Integer(required=True, description='ID of the social detail'),
-    'social_name': fields.String(required=True, description='Name of the social activity entered'),
-    'social_link': fields.String(required=True, description='Link of social activity'),
-})
+# Creating a copy of the insertion parser and adding an argument for the id of the resource in the db
+updateSocial_parser = insertSocial_parser.copy()
+updateSocial_parser.add_argument(
+    'social_id', type=int, location='form', required=True, help='ID of the social detail')
 
-deleteSocial_fields = api.model('Social(deletion)', {
-    'social_id': fields.Integer(required=True, description='ID of the social detail'),
-})
+# Declaring a deletetion parser object for the delete the resource at the id in the db
+deleteSocial_parser = base_parser.copy()
+deleteSocial_parser.add_argument(
+    'social_id', type=int, location='form', required=True, help='ID of the social detail')
 
 
 class Social(Resource):
     method_decorators = [verify_token]
 
-    @api.doc(body=insertSocial_fields, parser=api_parser)
+    @api.doc(parser=insertSocial_parser)
     @api.response(201, 'Social details successfully inserted.')
     @api.response(401, 'Unauthorized access')
     def post(self):
@@ -305,7 +306,7 @@ class Social(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=updateSocial_fields, parser=api_parser)
+    @api.doc(parser=updateSocial_parser)
     @api.response(201, 'Social details successfully updated.')
     @api.response(401, 'Unauthorized access')
     def put(self):
@@ -322,7 +323,7 @@ class Social(Resource):
         except Exception as e:
             abort(400, str(e))
 
-    @api.doc(body=deleteSocial_fields, parser=api_parser)
+    @api.doc(parser=deleteSocial_parser)
     @api.response(200, 'Social details successfully deleted.')
     @api.response(401, 'Unauthorized access')
     def delete(self):
