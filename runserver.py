@@ -1,4 +1,7 @@
 from wisopt_python import create_app
 
-create_app().run()
+app = create_app()
+
+if __name__ == '__main__':
+    app.run()
 
