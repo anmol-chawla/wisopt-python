@@ -8,6 +8,8 @@ portfolio_apis = api.namespace(
     'portfolio', description='APIs dealing with the portfolio of a user')
 discover_apis = api.namespace(
     'discover', description='APIs dealing with the discover section')
+promotions_apis = api.namespace(
+    'promotions', description='APIs dealing with the promoted events')
 
 
 def create_app():
@@ -20,6 +22,9 @@ def create_app():
 
     from .discover import discover as discover_blueprint
     app.register_blueprint(discover_blueprint)
+
+    from .promotions import promotions as promotions_blueprint
+    app.register_blueprint(promotions_blueprint)
 
     app.register_blueprint(api_bp)
     return app
