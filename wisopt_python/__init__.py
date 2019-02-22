@@ -1,9 +1,13 @@
 from flask import Flask, Blueprint
 from flask_restplus import Api
 api_bp = Blueprint('api', __name__)
-api = Api(api_bp, version='1.0', title='Wisopt_Python', description='All the python APIs under one roof', doc='/info/')
+api = Api(api_bp, version='1.0', title='Wisopt_Python',
+          description='All the python APIs under one roof', doc='/info/')
 app = Flask(__name__, instance_relative_config=True)
-portfolio_apis = api.namespace('portfolio', description='APIs dealing with the portfolio of a user')
+portfolio_apis = api.namespace(
+    'portfolio', description='APIs dealing with the portfolio of a user')
+discover_apis = api.namespace(
+    'discover', description='APIs dealing with the discover section')
 
 
 def create_app():
