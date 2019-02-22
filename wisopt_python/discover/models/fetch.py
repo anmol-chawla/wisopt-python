@@ -16,7 +16,7 @@ def fetch_articles(search_term):
                      'examples', 'tricks', 'common mistakes']
         searches = []
         for i in templates:
-            searches.append(search_term + " " + i)
+            searches.append(search_term + str(" ") + i)
 
         service = build("customsearch", "v1", developerKey=api_key)
 

@@ -11,7 +11,6 @@ def verify_token(f):
     def func_wrapper(**kwargs):
         try:
             with app.app_context():
-                print("a")
                 con = pymysql.connect(host=current_app.config['DB_HOST'],
                                       user=current_app.config['DB_USER'],
                                       password=current_app.config['DB_PASSWORD'],
@@ -21,7 +20,7 @@ def verify_token(f):
                                       port=current_app.config['DB_PORT'])
                 cur = con.cursor()
                 token = request.headers.get('token')
-                reg_id = request.form.get('user_id')
+                reg_id = request.headers.get('user_id')
                 if token and reg_id:
                     sql = "SELECT token_code FROM users WHERE token_code=\"" + \
                           token + "\" and user_id=" + reg_id + ";"

@@ -12,12 +12,19 @@ base_parser = api.parser()
 base_parser.add_argument(
     'token', location='headers', required=True, help='Token for the given user id')
 base_parser.add_argument(
-    'user_id', type=int, location='args', required=True, help='User ID')
+    'user_id', type=int, location='headers', required=True, help='User ID')
 
-# Declaring a parser object for inserting data with the necessary arguments
+# Declaring a parser object for fetching articles
 fetchArticle_parser = base_parser.copy()
 fetchArticle_parser.add_argument(
     'search_term', type=str, location='args', required=True, help='The term for which articles need to be fetched')
+
+# Declaring a parser object for inserting articles
+insertArticle_parser = base_parser.copy()
+insertArticle_parser.add_argument(
+    'search_term', type=str, location='args', required=True, help='The term for which articles need to be fetched')
+insertArticle_parser.add_argument(
+    'task_id', type=int, location='args', required=True, help='Task ID')
 
 
 class Articles(Resource):
@@ -37,13 +44,16 @@ class Articles(Resource):
         except Exception as e:
             abort(400, str(e))
 
+    @api.doc(parser=insertArticle_parser)
+    @api.response(201, 'Articles successfully inserted.')
+    @api.response(401, 'Unauthorized access')
     def post(self):
         '''
             Temporary method to insert articles into the database
         '''
         try:
-            search_term = request.form.get('search_term')
-            task_id = request.form.get('task_id')
+            search_term = request.args.get('search_term')
+            task_id = request.args.get('task_id')
             insert_articles(search_term, task_id)
             return dict(status='Articles successfully inserted.'), 201
         except Exception as e:
