@@ -6,6 +6,7 @@ from .check import check_duplicates
 from .fetch import fetch_articles
 
 
+# Insert articles into the database
 def insert_articles(search_term, task_id):
     try:
         with app.app_context():

@@ -14,7 +14,12 @@ def create_app():
     global app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile('config.py')
+
     from .portfolio import portfolio as portfolio_blueprint
     app.register_blueprint(portfolio_blueprint)
+
+    from .discover import discover as discover_blueprint
+    app.register_blueprint(discover_blueprint)
+
     app.register_blueprint(api_bp)
     return app
