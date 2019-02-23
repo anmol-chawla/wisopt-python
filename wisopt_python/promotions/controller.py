@@ -10,13 +10,16 @@ class Promotions(Resource):
     method_decorators = [verify_token]
 
     @api.doc(parser=base_parser)
-    @api.response(201, 'JSON response')
+    @api.response(200, 'JSON response')
     @api.response(401, 'Unauthorized access')
     def get(self):
         '''
             Method to get the current promotions
         '''
         try:
-            return jsonify(promotion_events())
+            return {
+                'status': 'successful',
+                'data': promotion_events()
+            }
         except Exception as e:
             abort(400, str(e))
