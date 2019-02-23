@@ -17,9 +17,9 @@ class Promotions(Resource):
             Method to get the current promotions
         '''
         try:
-            return {
+            return jsonify({
                 'status': 'successful',
                 'data': promotion_events()
-            }
+            })
         except Exception as e:
             abort(400, str(e))

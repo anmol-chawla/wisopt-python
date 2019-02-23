@@ -43,7 +43,7 @@ class Education(Resource):
             Insert the education details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             start_year = request.form.get('start_year')
             end_year = request.form.get('end_year')
             education_name = request.form.get('education_name')
@@ -63,7 +63,7 @@ class Education(Resource):
             Update the education details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             start_year = request.form.get('start_year')
             end_year = request.form.get('end_year')
             education_id = request.form.get('education_id')
@@ -128,7 +128,7 @@ class Experience(Resource):
             Insert the experience details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             title = request.form.get('title')
             employer_name = request.form.get('employer_name')
             start_date = request.form.get('start_date')
@@ -149,7 +149,7 @@ class Experience(Resource):
             Update the experience details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             experience_id = request.form.get('experience_id')
             title = request.form.get('title')
             employer_name = request.form.get('employer_name')
@@ -215,7 +215,7 @@ class ExtraCurricular(Resource):
             Insert the extra curriculara details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             ec_type = request.form.get('ec_type')
             ec_name = request.form.get('ec_name')
             ec_desc = request.form.get('ec_desc')
@@ -235,7 +235,7 @@ class ExtraCurricular(Resource):
             Update the extra curricular details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             ec_id = request.form.get('ec_id')
             ec_type = request.form.get('ec_type')
             ec_name = request.form.get('ec_name')
@@ -292,7 +292,7 @@ class Social(Resource):
             Insert the social details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             social_name = request.form.get('social_name')
             social_link = request.form.get('social_link')
             insert_social(user_id, social_name, social_link)
@@ -308,7 +308,7 @@ class Social(Resource):
             Update the social details for the user_id
         """
         try:
-            user_id = request.headers.get('user_id')
+            user_id = request.headers.get('userid')
             social_id = request.form.get('social_id')
             social_name = request.form.get('social_name')
             social_link = request.form.get('social_link')
