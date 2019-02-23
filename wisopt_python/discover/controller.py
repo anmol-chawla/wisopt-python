@@ -4,15 +4,8 @@ from flask_restplus import Resource
 from ..common.authenticate import verify_token
 from .models.fetch import return_articles
 from .models.insertions import insert_articles
-from .. import discover_apis as api
+from .. import base_parser, api
 
-
-# Declaring a base parser object with the arguments required for each route
-base_parser = api.parser()
-base_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
-base_parser.add_argument(
-    'user_id', type=int, location='headers', required=True, help='User ID')
 
 # Declaring a parser object for fetching articles
 fetchArticle_parser = base_parser.copy()

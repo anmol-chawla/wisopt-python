@@ -20,7 +20,7 @@ def verify_token(f):
                                       port=current_app.config['DB_PORT'])
                 cur = con.cursor()
                 token = request.headers.get('token')
-                reg_id = request.headers.get('user_id')
+                reg_id = request.headers.get('userid')
                 if token and reg_id:
                     sql = "SELECT token_code FROM users WHERE token_code=\"" + \
                           token + "\" and user_id=" + reg_id + ";"

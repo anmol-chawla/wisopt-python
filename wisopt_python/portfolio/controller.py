@@ -5,14 +5,8 @@ from ..common.authenticate import verify_token
 from .models.insertions import insert_education, insert_experience, insert_extra_curricular, insert_social
 from .models.updates import update_education, update_experience, update_extra_curricular, update_social
 from .models.deletions import delete_education, delete_experience, delete_extra_curricular, delete_social
-from .. import portfolio_apis as api
+from .. import base_parser, api
 
-# Declaring a base parser object with the arguments required for each route
-base_parser = api.parser()
-base_parser.add_argument(
-    'token', location='headers', required=True, help='Token for the given user id')
-base_parser.add_argument(
-    'user_id', type=int, location='headers', required=True, help='User ID')
 
 # Declaring a parser object for inserting data with the necessary arguments
 insertEducation_parser = base_parser.copy()

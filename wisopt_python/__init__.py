@@ -12,6 +12,14 @@ promotions_apis = api.namespace(
     'promotions', description='APIs dealing with the promoted events')
 
 
+# Declaring a base parser object with the default arguments required for each route
+base_parser = api.parser()
+base_parser.add_argument(
+    'token', location='headers', required=True, help='Token for the given user id')
+base_parser.add_argument(
+    'userid', type=int, location='headers', required=True, help='User ID')
+
+
 def create_app():
     global app
     app = Flask(__name__, instance_relative_config=True)
