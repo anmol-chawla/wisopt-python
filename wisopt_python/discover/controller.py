@@ -11,6 +11,8 @@ from .. import base_parser, api
 fetchArticle_parser = base_parser.copy()
 fetchArticle_parser.add_argument(
     'search_term', type=str, location='args', required=True, help='The term for which articles need to be fetched')
+fetchArticle_parser.add_argument(
+    'task_id', type=int, location='args', required=True, help='Task ID')
 
 # Declaring a parser object for inserting articles
 insertArticle_parser = base_parser.copy()
@@ -32,7 +34,8 @@ class Articles(Resource):
         '''
         try:
             search_term = request.args.get('search_term')
-            data = return_articles(search_term)
+            task_id = request.args.get('task_id')
+            data = return_articles(search_term, task_id)
             return jsonify(data)
         except Exception as e:
             abort(400, str(e))

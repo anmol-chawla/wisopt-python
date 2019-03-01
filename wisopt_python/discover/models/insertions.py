@@ -3,7 +3,15 @@ import pymysql
 from flask import current_app
 from ... import app
 from .check import check_duplicates
-from .fetch import fetch_articles
+try:
+    from .fetch import fetch_articles
+except ImportError:
+    pass
+
+
+def normalize(text):
+    text = text.lower().replace(" ", "")
+    return text
 
 
 # Insert articles into the database
@@ -20,11 +28,12 @@ def insert_articles(search_term, task_id):
         cur = con.cursor()
     except Exception as e:
         raise Exception('Unable to connect to server database')
+    search_term = normalize(search_term)
     articles = fetch_articles(search_term)
     for article in articles:
-        if not check_duplicates(article['content_link']):
-            cur.execute(
-                "INSERT INTO table_goals_content (task_id, search_term, content_title, content_description, content_link, content_provider, content_type) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (task_id, search_term, article['content_title'], article['content_description'], article['content_link'], article['content_provider'], "article"))
-    con.commit()
+            if not check_duplicates(article['content_link']):
+                cur.execute(
+                    "INSERT INTO table_goals_content (task_id, search_term, content_title, content_description, content_link, content_provider, content_type, search_query) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    (task_id, search_term, article['content_title'], article['content_description'], article['content_link'], article['content_provider'], "article", article['query']))
+            con.commit()
     con.close()
