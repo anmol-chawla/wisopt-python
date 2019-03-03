@@ -3,10 +3,6 @@ import pymysql
 from flask import current_app
 from ... import app
 from .check import check_duplicates
-try:
-    from .fetch import fetch_articles
-except ImportError:
-    pass
 
 
 def normalize(text):
@@ -29,7 +25,10 @@ def insert_articles(search_term, task_id):
     except Exception as e:
         raise Exception('Unable to connect to server database')
     search_term = normalize(search_term)
+
+    from .fetch import fetch_articles
     articles = fetch_articles(search_term)
+
     for article in articles:
             if not check_duplicates(article['content_link']):
                 cur.execute(
