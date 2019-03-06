@@ -4,10 +4,7 @@ from flask import current_app
 from ... import app
 from googleapiclient.discovery import build
 from .insertions import insert_articles
-try:
-    from .insertions import normalize
-except ImportError:
-    pass
+from .insertions import normalize
 
 
 # Get articles for insertion into the database
@@ -18,7 +15,6 @@ def fetch_articles(search_term):
             cse_id = current_app.config['GOOGLE_CSE_ID']
         results = []
         searches = []
-        search_term = normalize(search_term)
         templates = ['tips', 'best practices', 'tutorial',
                      'examples', 'tricks', 'common mistakes']
         for i in templates:
@@ -54,12 +50,12 @@ def return_articles(search_term, task_id):
         cur = con.cursor()
     except Exception as e:
         raise Exception('Unable to connect to server database')
+    search_term = normalize(search_term)
     cur.execute("SELECT content_title, content_link, content_description, content_type, search_term, task_id FROM table_goals_content WHERE search_term=%s", (search_term))
     content = cur.fetchall()
     if(len(content) < 5):
-        insert_articles(search_term, task_id)
-        cur.execute("SELECT content_title, content_link, content_description, content_type, search_term, task_id FROM table_goals_content WHERE search_term=%s", (search_term))
-        content = cur.fetchall()
+        content = fetch_articles(search_term)
+        insert_articles(content, search_term, task_id)
     try:
         posns = random.sample(range(0, len(content)), 5)
     except Exception:
