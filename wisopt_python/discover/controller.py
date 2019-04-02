@@ -2,7 +2,7 @@ from flask import request, abort, jsonify
 from flask_restplus import Resource
 
 from ..common.authenticate import verify_token
-from .models.fetch import return_articles
+from .models.fetch import return_articles, get_metadata
 from .models.insertions import rate_content
 from .. import base_parser, api
 
@@ -21,6 +21,12 @@ rateArticle_parser.add_argument(
     'content_id', type=int, location='args', required=True, help='The id for content to be rated')
 rateArticle_parser.add_argument(
     'score', type=int, location='args', required=True, help='Score (1 or -1 or -3)')
+
+
+# Declaring a parser object for article metadata
+metaArticle_parser = base_parser.copy()
+metaArticle_parser.add_argument(
+    'url', type=str, location='args', required=True, help='The url for the content')
 
 
 class Articles(Resource):
@@ -53,5 +59,19 @@ class Articles(Resource):
             content_id = request.args.get('content_id')
             rate_content(content_id, score)
             return dict(status='Articles successfully rated.'), 201
+        except Exception as e:
+            abort(400, str(e))
+
+    @api.doc(parser=metaArticle_parser)
+    @api.response(201, 'Article metadata successfully retrieved.')
+    @api.response(401, 'Unauthorized access')
+    def post(self):
+        '''
+            Method to fetch article metadata
+        '''
+        try:
+            url = request.args.get('url')
+            data = get_metadata(url)
+            return jsonify(data)
         except Exception as e:
             abort(400, str(e))

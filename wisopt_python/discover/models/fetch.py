@@ -5,6 +5,8 @@ from ... import app
 from googleapiclient.discovery import build
 from .insertions import insert_articles
 from .insertions import normalize
+import extraction
+import requests
 
 
 # Get articles for insertion into the database
@@ -65,3 +67,17 @@ def return_articles(search_term, task_id):
         articledata.append(content[i])
     con.close()
     return articledata
+
+
+# Get metadata from URL
+def get_metadata(url):
+    try:
+        html = requests.get(url).text
+        extracted = extraction.Extractor().extract(html, source_url=url)
+        data = {}
+        data['title'] = extracted.title
+        data['description'] = extracted.description
+        data['image'] = extracted.image
+        return data
+    except Exception:
+        return "Preview not found"
