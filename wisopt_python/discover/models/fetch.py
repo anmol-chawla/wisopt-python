@@ -18,7 +18,8 @@ def fetch_articles(search_term):
         results = []
         searches = []
         templates = ['tips', 'best practices', 'tutorial',
-                     'examples', 'tricks', 'common mistakes']
+                     'examples', 'tricks', 'common mistakes', 'for beginners',
+                     'sample projects', 'interview questions']
         for i in templates:
             searches.append(search_term + str(" ") + i)
         service = build("customsearch", "v1", developerKey=api_key)
